@@ -76,6 +76,7 @@ $_['entry_logo']                   = 'Store Logo:';
 $_['entry_icon']                   = 'Icon:<br /><span class="help">The icon should be a PNG that is 16px x 16px.</span>';
 $_['entry_image_category']         = 'Category Image Size:';
 $_['entry_image_thumb']            = 'Product Image Thumb Size:';
+$_['entry_image_viewer']           = 'Product Image Viewer:';
 $_['entry_image_popup']            = 'Product Image Popup Size:';
 $_['entry_image_product']          = 'Product Image List Size:';
 $_['entry_image_additional']       = 'Additional Product Image Size:';
@@ -114,6 +115,9 @@ $_['entry_error_display']          = 'Display Errors:';
 $_['entry_error_log']              = 'Log Errors:';
 $_['entry_error_filename']         = 'Error Log Filename:';
 $_['entry_google_analytics']       = 'Google Analytics Code:<br /><span class="help">Login to your <a onclick="window.open(\'http://www.google.com/analytics/\');"><u>Google Analytics</u></a> account and after creating your web site profile copy and paste the analytics code into this field.</span>';
+
+# Option name
+$_['option_default']               = 'Default';
 
 // Error
 $_['error_warning']                = 'Warning: Please check the form carefully for errors!';

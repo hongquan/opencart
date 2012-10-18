@@ -101,6 +101,19 @@ class ControllerSettingSetting extends Controller {
 		$this->data['entry_icon'] = $this->language->get('entry_icon');
 		$this->data['entry_image_category'] = $this->language->get('entry_image_category');
 		$this->data['entry_image_thumb'] = $this->language->get('entry_image_thumb');
+		$this->data['entry_image_viewer'] = $this->language->get('entry_image_viewer');
+		// Default option for <select> element as entry_image_viewer
+		$this->data['option_default'] = $this->language->get('option_default');
+		// Next options are the modules of "imagview" type
+		$this->data['imgview_modules'] = $this->get_imgview_modules();
+		// The module was used for viewing
+		$this->data['selected_imgview'] = $this->config->get('config_image_viewer');
+		// This config may be obsolete, if module has been uninstalled.
+		// If so, we reset this config to default value.
+		$selected = $this->data['selected_imgview'];
+		if (!array_key_exists($selected, $this->data['imgview_modules'])) {
+			$this->data['selected_imgview'] = '';
+		}
 		$this->data['entry_image_popup'] = $this->language->get('entry_image_popup');
 		$this->data['entry_image_product'] = $this->language->get('entry_image_product');
 		$this->data['entry_image_additional'] = $this->language->get('entry_image_additional');
@@ -754,7 +767,13 @@ class ControllerSettingSetting extends Controller {
 		} else {
 			$this->data['config_image_thumb_height'] = $this->config->get('config_image_thumb_height');
 		}
-		
+
+		if (isset($this->request->post['config_image_viewer'])) {
+			$this->data['config_image_viewer'] = $this->request->post['config_image_viewer'];
+		} else {
+			$this->data['config_image_viewer'] = $this->config->get('config_image_viewer');
+		}
+
 		if (isset($this->request->post['config_image_popup_width'])) {
 			$this->data['config_image_popup_width'] = $this->request->post['config_image_popup_width'];
 		} else {
@@ -1203,6 +1222,48 @@ class ControllerSettingSetting extends Controller {
 		}
 		
 		$this->response->setOutput(json_encode($json));
+	}
+
+	/**
+	 * Get list of modules whose name starts with "imgview_"
+	 * @return	array	Array whose key is machine name and value is human-friendly name.
+	 */
+	public function get_imgview_modules() {
+		$this->load->model('setting/extension');
+
+		# Get the list of all installed modules
+		$modules = $this->model_setting_extension->getInstalled('module');
+		foreach ($modules as $key => $value) {
+			$modulefile = DIR_APPLICATION . 'controller/module/' . $value . '.php';
+			if (!file_exists($modulefile)) {
+				$this->model_setting_extension->uninstall('module', $value);
+				unset($modules[$key]);
+			}
+		}
+
+		$modules = array_filter($modules, array($this, 'is_imgview_module'));
+		if (!count($modules)) {  // No result
+			return array();
+		}
+		$names = array_map(array($this, 'get_module_name'), $modules);
+		return array_combine($modules, $names);
+	}
+
+	public function is_imgview_module($module) {
+		if (substr($module, 0, strlen('imgview_')) == 'imgview_') {
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	/**
+	 * Get human-readable name of module
+	 * @param	string	$module	Module's machine name (stored in DB)
+	 * @return	string			Human-readable name (from language file)
+	 */
+	public function get_module_name($module) {
+		$this->load->language('module/' . $module);
+		return $this->language->get('heading_title');
 	}
 }
 ?>

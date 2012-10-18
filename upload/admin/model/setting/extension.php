@@ -17,7 +17,15 @@ class ModelSettingExtension extends Model {
 	}
 	
 	public function uninstall($type, $code) {
-		$this->db->query("DELETE FROM " . DB_PREFIX . "extension WHERE `type` = '" . $this->db->escape($type) . "' AND `code` = '" . $this->db->escape($code) . "'");
+		$ecode = $this->db->escape($code);
+		$this->db->query("DELETE FROM " . DB_PREFIX . "extension WHERE `type` = '" . $this->db->escape($type) . "' AND `code` = '" . $ecode . "'");
+
+		// If setting/config_image_viewer was set to this module, reset to default
+		if (substr($ecode, 0, strlen('imgview_')) == 'imgview_') {
+			$table = DB_PREFIX . "setting";
+			$query = "UPDATE $table SET `value` = '' WHERE `key` = 'config_image_viewer' AND `value` = '$ecode'";
+			$this->db->query($query);
+		}
 	}
 	
 	public function sql($sql) {

@@ -641,6 +641,18 @@
                 <?php } ?></td>
             </tr>
             <tr>
+              <td><span class="required">*</span> <?php echo $entry_image_viewer; ?></td>
+              <td><select name="config_image_viewer">
+                <option value=""><?php echo $option_default; ?></option>
+                <?php
+                foreach ($imgview_modules as $md => $name) {
+                  $selected = ($md == $selected_imgview) ? "selected='true'" : "";
+                  echo "<option value='$md' $selected>$name</option>";
+                }
+                ?>
+              </select></td>
+            </tr>
+            <tr>
               <td><span class="required">*</span> <?php echo $entry_image_popup; ?></td>
               <td><input type="text" name="config_image_popup_width" value="<?php echo $config_image_popup_width; ?>" size="3" />
                 x
