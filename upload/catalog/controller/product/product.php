@@ -201,6 +201,14 @@ class ControllerProductProduct extends Controller {
 			} else {
 				$this->data['thumb'] = '';
 			}
+
+			/* Determine which is used for viewing product photo */
+			$imgview = $this->config->get('config_image_viewer');
+			$this->data['use_default_viewer'] = ($imgview == '') ? TRUE : FALSE;
+
+			/* Load image viewer module */
+			$viewer = $this->getChild('module/' . $imgview, array());
+			$this->data['viewer'] = ($viewer) ? $viewer : '';
 			
 			$this->data['images'] = array();
 			
