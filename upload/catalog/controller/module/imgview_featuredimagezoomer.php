@@ -19,7 +19,7 @@ class ControllerModuleImgViewFeaturedImageZoomer extends Controller {
 			$this->data = array_merge($this->data, $d['fiz_config']);
 		}
 
-		if ($this->data['range_low'] == '') {
+		if (isset($this->data['range_low']) && $this->data['range_low'] == '') {
 			unset($this->data['range_low']);
 			unset($this->data['range_high']);
 		}
