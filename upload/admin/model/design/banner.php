@@ -15,7 +15,8 @@ class ModelDesignBanner extends Model {
 					$this->db->query("INSERT INTO " . DB_PREFIX . "banner_image_description SET banner_image_id = '" . (int)$banner_image_id . "', language_id = '" . (int)$language_id . "', banner_id = '" . (int)$banner_id . "', title = '" .  $this->db->escape($banner_image_description['title']) . "'");
 				}
 			}
-		}		
+		}
+		return $banner_id;
 	}
 	
 	public function editBanner($banner_id, $data) {
