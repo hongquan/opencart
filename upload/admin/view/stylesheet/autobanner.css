@@ -1,0 +1,35 @@
+#allproducts_wrapper {
+	width: 46%;
+	overflow: hidden;
+	float: left
+}
+#ownproducts_wrapper {
+	width: 46%;
+	overflow: hidden;
+	float: right
+}
+.dataTables_length {
+	width: 200px;
+	float: left
+}
+.dataTables_filter {
+	width: 300px;
+	float: right;
+	text-align: right
+}
+.dataTables_info {
+	width: 300px;
+	float: left
+}
+.dataTables_paginate {
+	width: 120px;
+	float: right;
+	text-align: right
+}
+.dataTables_paginate a {
+	margin-left: 15px;
+}
+
+img.addproduct:hover, img.remproduct:hover {
+	cursor: pointer
+}
