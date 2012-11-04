@@ -48,6 +48,8 @@ class ControllerModuleAutoBanner extends Controller {
 		$this->session->data['error'] = '';
 		$this->session->data['success'] = '';
 
+		$this->data['entry_name'] = $this->language->get('entry_name');
+
 		$this->children = array(
 			'common/header',
 			'common/footer'
@@ -89,16 +91,14 @@ class ControllerModuleAutoBanner extends Controller {
 	function _make_form_data($banner_id=0) {
 		$this->data['text_enabled'] = $this->language->get('text_enabled');
 		$this->data['text_disabled'] = $this->language->get('text_disabled');
-		$this->data['text_default'] = $this->language->get('text_default');
-		$this->data['text_image_manager'] = $this->language->get('text_image_manager');
- 		$this->data['text_browse'] = $this->language->get('text_browse');
-		$this->data['text_clear'] = $this->language->get('text_clear');	
 
 		$this->data['entry_name'] = $this->language->get('entry_name');
-		$this->data['entry_title'] = $this->language->get('entry_title');
-		$this->data['entry_link'] = $this->language->get('entry_link');
 		$this->data['entry_image'] = $this->language->get('entry_image');
 		$this->data['entry_status'] = $this->language->get('entry_status');
+
+		$this->data['column_name'] = $this->language->get('column_name');
+		$this->data['column_image'] = $this->language->get('column_image');
+		$this->data['column_model'] = $this->language->get('column_model');
 
 
  		if (isset($this->error['name'])) {
@@ -205,6 +205,15 @@ class ControllerModuleAutoBanner extends Controller {
 		$this->_show_form($id);
 	}
 
+	public function delete() {
+		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+			$this->_process_deletion();
+		}
+		/* Redirect to parent page */
+		$this->redirect($this->url->link('module/autobanner', 'token=' . $this->session->data['token'], 'SSL'));
+	}
+
+	/* Strip some unused info relate to product */
 	function _reduce_product($prd) {
 		$img = $prd['image'];
 		if ($img && file_exists(DIR_IMAGE . $img)) {
@@ -221,6 +230,7 @@ class ControllerModuleAutoBanner extends Controller {
 		);
 	}
 
+	/* Banner_image_description in various languages */
 	function _desc_in_langs($desc, $languages) {
 		$d = array();
 		foreach ($languages as $l) {
@@ -229,6 +239,13 @@ class ControllerModuleAutoBanner extends Controller {
 		}
 		return $d;
 	}
+
+	/* Make route for banner item */
+	function _make_product_route($prd_id) {
+		$cat = $this->model_catalog_product->getProductCategories($id)[0];
+		return "index.php?route=product/product&path=$cat&product_id=$prd_id";
+	}
+
 	function _process_submitted_data() {
 		if (!$this->_validate()) {
 			return;
@@ -252,8 +269,7 @@ class ControllerModuleAutoBanner extends Controller {
 			$banner_image_description = $this->_desc_in_langs($product_info['name'],
 															  $languages);
 			$image = $product_info['image'];
-			$cat = $this->model_catalog_product->getProductCategories($id)[0];
-			$link = $this->url->link('product/product', "path=$cat&product_id=$id");
+			$link = $this->_make_product_route($id);
 			$banner_image[] = compact('banner_image_description', 'image', 'link');
 		}
 		$banner['banner_image'] = $banner_image;
@@ -276,6 +292,23 @@ class ControllerModuleAutoBanner extends Controller {
 		$this->redirect($this->url->link('module/autobanner', 'token=' . $this->session->data['token'], 'SSL'));
 	}
 
+	function _process_deletion() {
+		if (!$this->_validate_delete()) {
+			$this->session->data['error_warning'] = $this->error['warning'];
+			return;
+		}
+
+		$this->load->model('module/autobanner');
+		$this->load->model('design/banner');
+		$this->load->language("module/{$this->MODULENAME}");
+		$banners = $this->request->post['delete'];
+		/* Delete on the table of this module */
+		$this->model_module_autobanner->deleteBanners($banners);
+		/* Delete in system's banners table */
+		array_map(array($this->model_design_banner, 'deleteBanner'), $banners);
+		$this->session->data['success'] = $this->language->get('text_success');
+	}
+
 	function _validate() {
 		$this->request->post['name'] = trim($this->request->post['name']);
 		if (!$this->user->hasPermission('modify', 'design/banner')) {
@@ -293,6 +326,21 @@ class ControllerModuleAutoBanner extends Controller {
 		}
 	}
 
+	function _validate_delete() {
+		if (!$this->user->hasPermission('modify', 'design/banner')) {
+			$this->error['warning'] = $this->language->get('error_permission');
+		}
+		$this->request->post['delete'] = array_map('intval',
+		                                           $this->request->post['delete']);
+
+		if (!$this->error) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/* This method is called when this module is activated */
 	public function install() {
 		$this->load->language('extension/module');
 		
@@ -305,10 +353,12 @@ class ControllerModuleAutoBanner extends Controller {
 		else {
 			/*Permisson is OK */
 			$this->load->model('module/autobanner');
+			/* Install neccessary table for this module */
 			$this->model_module_autobanner->install();
 		}
 	}
 
+	/* This method is called when this module is deactivated */
 	public function uninstall() {
 		$this->load->language('extension/module');
 
@@ -321,6 +371,7 @@ class ControllerModuleAutoBanner extends Controller {
 		else {
 			/*Permisson is OK */
 			$this->load->model('module/autobanner');
+			/* Remove the table created by this module */
 			$this->model_module_autobanner->uninstall();
 		}
 	}

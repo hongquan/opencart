@@ -78,6 +78,13 @@ class ModelModuleAutoBanner extends Model {
 		return $this->db->query($sql);
 	}
 
+	public function deleteBanners($banner_ids) {
+		$idlist = join(', ', $banner_ids);
+		$sql = "DELETE FROM `".DB_PREFIX.self::TABLE_NAME."`
+		        WHERE `banner_id` IN ($idlist)";
+		return $this->db->query($sql);
+	}
+
 	function _row_to_id($row) {
 		return $row['banner_id'];
 	}

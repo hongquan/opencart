@@ -54,8 +54,8 @@
 		<table id='allproducts' class='list'>
 			<thead>
 				<tr>
-					<td class='left'>Image</td>
-					<td><?php echo $entry_name; ?></td>
+					<td class='left'><?php echo $column_image ?></td>
+					<td><?php echo $column_name; ?></td>
 					<td>Model</td>
 					<td></td>
 				</tr>
@@ -80,9 +80,9 @@
 		<table id='ownproducts' class='list'>
 			<thead>
 				<tr>
-					<td class='left'>Image</td>
-					<td><?php echo $entry_name; ?></td>
-					<td>Model</td>
+					<td class='left'><?php echo $column_image ?></td>
+					<td><?php echo $column_name; ?></td>
+					<td><?php echo $column_model ?></td>
 					<td></td>
 				</tr>
 			</thead>

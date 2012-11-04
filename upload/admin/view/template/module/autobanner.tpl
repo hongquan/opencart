@@ -24,11 +24,12 @@
 			</div>
 		</div>
 		<div class="content">
+			<form action="<?php echo $delete; ?>" method="post" enctype="multipart/form-data" id="form">
 			<table class='list'>
 				<thead>
 					<tr>
 					<td><input type='checkbox' /></td>
-					<td class='left'>Name</td>
+					<td class='left'><?php echo $entry_name ?></td>
 					<td></td>
 					</tr>
 				</thead>
@@ -36,7 +37,8 @@
 				<?php
 				foreach ($own_banners as $b) { ?>
 					<tr>
-						<td><input type='checkbox' name='selected[]' /></td>
+						<td><input type='checkbox' name='delete[]'
+						           value='<?php echo $b['banner_id']?>'/></td>
 						<td class='left'><?php echo $b['name']?></td>
 						<td>
 							<a href='<?php echo $b['edit_link']?>'>Edit</a>
@@ -46,6 +48,7 @@
 				} ?>
 				</tbody>
 			</table>
+			</form>
 		</div>
 	</div>
 </div>
